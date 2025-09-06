@@ -12,6 +12,8 @@ class HtmlParser
 
     public function __construct()
     {
+
+        
         $this->dom = new \DOMDocument();
     }
 
