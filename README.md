@@ -1,170 +1,109 @@
+# ScrapeFlow
 
-# Gregorian-Jalali Converter for Laravel
+**ScrapeFlow** is a chainable, SOAP-like HTML parser for Laravel using pure PHP.  
+It allows you to parse HTML from URLs or strings in a fluent, readable way.
 
-A simple **pure PHP package** to convert **Gregorian dates to Jalali (Persian) dates** and vice versa, designed to work easily with Laravel projects.  
-No external libraries required.
+Package: `amir-anisheh/scrapeflow`
 
 ---
 
 ## Features
 
-- Convert **Gregorian → Jalali**  
-- Convert **Jalali → Gregorian**  
-- Pure PHP implementation, no dependencies  
-- Easy to integrate into Laravel  
+- Chainable syntax for fluent HTML parsing
+- Select elements by **tag**, **class**, **id**, or **attribute**
+- Get **text** or **HTML** of elements
+- Pure PHP, no external parsing libraries required
+- Ready to use in Laravel with automatic package discovery
 
 ---
-
 
 ## Installation
 
-### 1. Install via Packagist (Recommended)
-
-Once the package is published on Packagist, you can install it using Composer:
+Require the package via Composer:
 
 ```bash
-composer require amir-anisheh/gregorian-jalali
+composer require amir-anisheh/scrapeflow
 ````
 
-Or, if you want a specific version:
-
-```bash
-composer require amir-anisheh/gregorian-jalali:^1.0
-```
-
----
-
-### 2. Install directly from GitHub 
-
-If you haven’t published the package on Packagist yet, you can require it directly from GitHub:
-
-1. Add the repository to your Laravel project’s `composer.json`:
+Or for local development:
 
 ```json
-{
-  "repositories": [
+"repositories": [
     {
-      "type": "vcs",
-      "url": "https://github.com/AmirAnisheh/gregorian-jalali.git"
+        "type": "path",
+        "url": "../scrapeflow"
     }
-  ],
-  "require": {
-    "amir-anisheh/gregorian-jalali": "dev-main"
-  }
-}
+]
 ```
 
-2. Run Composer update:
+Then require it:
 
 ```bash
-composer update
+composer require amir-anisheh/scrapeflow:@dev
 ```
 
 ---
-
-### 3. Autoload
-
-Composer will automatically autoload the package.
-Use it in your Laravel project:
-
-```php
-use AmirAnisheh\GregorianJalali\JalaliConverter;
-
-$jalali = JalaliConverter::toJalali(2025, 9, 6);
-$gregorian = JalaliConverter::toGregorian(1404, 6, 15);
-```
-
-
----
-
 
 ## Usage
 
-### 1. Import the converter
+### Basic Example
 
 ```php
-use AmirAnisheh\GregorianJalali\JalaliConverter;
+use AmirAnisheh\ScrapeFlow\HtmlParserService;
+
+$parser = new HtmlParserService();
+
+// Get all titles by class
+$titles = $parser->url('https://example.com')
+                 ->getByClass('title')
+                 ->texts();
+
+// Get the first <h1> text
+$firstH1 = $parser->url('https://example.com')
+                  ->getByTag('h1')
+                  ->text();
+
+print_r($titles);
+echo $firstH1;
 ```
 
-### 2. Convert Gregorian to Jalali
+### Chainable Syntax
 
 ```php
-$jalali = JalaliConverter::toJalali(2025, 9, 6);
-echo $jalali; // Output: 1404/06/15
-```
-
-### 3. Convert Jalali to Gregorian
-
-```php
-$gregorian = JalaliConverter::toGregorian(1404, 6, 15);
-echo $gregorian; // Output: 2025-09-06
+$parser->url('https://example.com')
+       ->getByClass('container')
+       ->getByTag('h2')
+       ->texts();
 ```
 
 ---
 
-## Example in Laravel Controller
+## Methods
 
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use AmirAnisheh\GregorianJalali\JalaliConverter;
-
-class DateController extends Controller
-{
-    public function convert(Request $request)
-    {
-        $gregorianDate = $request->input('gregorian', '2025-09-06'); // default value
-        [$gy, $gm, $gd] = explode('-', $gregorianDate);
-
-        $jalali = JalaliConverter::toJalali((int)$gy, (int)$gm, (int)$gd);
-
-        return response()->json([
-            'gregorian' => $gregorianDate,
-            'jalali' => $jalali,
-        ]);
-    }
-
-    public function convertJalali(Request $request)
-    {
-        $jalaliDate = $request->input('jalali', '1404/06/15'); // default value
-        [$jy, $jm, $jd] = explode('/', $jalaliDate);
-
-        $gregorian = JalaliConverter::toGregorian((int)$jy, (int)$jm, (int)$jd);
-
-        return response()->json([
-            'jalali' => $jalaliDate,
-            'gregorian' => $gregorian,
-        ]);
-    }
-}
-```
-
----
-
-## Example Routes
-
-```php
-use App\Http\Controllers\DateController;
-
-Route::get('/convert-gregorian', [DateController::class, 'convert']);
-Route::get('/convert-jalali', [DateController::class, 'convertJalali']);
-```
-
-Visit these URLs to test:
-
-```
-http://your-app.test/convert-gregorian?gregorian=2025-09-06
-http://your-app.test/convert-jalali?jalali=1404/06/15
-```
+| Method                                        | Description                        |
+| --------------------------------------------- | ---------------------------------- |
+| `url(string $url)`                            | Load HTML from a URL               |
+| `loadHtml(string $html)`                      | Load HTML from a string            |
+| `getByTag(string $tag)`                       | Select nodes by tag name           |
+| `getByClass(string $class)`                   | Select nodes by class name         |
+| `getById(string $id)`                         | Select nodes by ID                 |
+| `getByAttribute(string $attr, string $value)` | Select nodes by attribute          |
+| `text()`                                      | Get text of the first matched node |
+| `texts()`                                     | Get text of all matched nodes      |
+| `html()`                                      | Get HTML of the first matched node |
+| `allHtml()`                                   | Get HTML of all matched nodes      |
 
 ---
 
 ## License
 
-This package is **MIT licensed**.
-Feel free to use and modify it in your projects.
+ScrapeFlow is **open-sourced software licensed under the MIT license**.
 
+---
+
+## Author
+
+**Amir Anisheh**
+Email: [amirtaja@yahoo.com](mailto:amirtaja@yahoo.com)
+GitHub: [https://github.com/AmirAnisheh](https://github.com/AmirAnisheh)
 
