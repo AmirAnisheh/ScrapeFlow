@@ -23,7 +23,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "AmirAnisheh\\ScrapeFlow\\ScrapeFlowServiceProvider"
+                "AmirAnisheh\\ScrapeFlow\\ScrapeFlowProvider"
             ],
             "aliases": {
                 "ScrapeFlow": "AmirAnisheh\\ScrapeFlow\\Facades\\ScrapeFlow"
