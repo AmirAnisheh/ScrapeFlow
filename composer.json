@@ -1,0 +1,12 @@
+{
+  "name": "amiranishe/gregorian-jalali",
+  "description": "A pure PHP Gregorian to Jalali converter for Laravel",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "AmirAnisheh\\GregorianJalali\\": "src/"
+    }
+  },
+  "require": {}
+}
