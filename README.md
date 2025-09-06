@@ -49,9 +49,9 @@ composer require amir-anisheh/scrapeflow:@dev
 ### Basic Example
 
 ```php
-use AmirAnisheh\ScrapeFlow\HtmlParserService;
+use AmirAnisheh\ScrapeFlow\HtmlParser;
 
-$parser = new HtmlParserService();
+$parser = new HtmlParser();
 
 // Get all titles by class
 $titles = $parser->url('https://example.com')
