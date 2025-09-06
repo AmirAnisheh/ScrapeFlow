@@ -15,33 +15,78 @@ No external libraries required.
 
 ---
 
+
 ## Installation
 
-### Via Composer (GitHub repository)
+### 1. Install via Packagist (Recommended)
 
-Add the repository to your Laravel project `composer.json` if not on Packagist:
+Once the package is published on Packagist, you can install it using Composer:
+
+```bash
+composer require amir-anisheh/gregorian-jalali
+````
+
+Or, if you want a specific version:
+
+```bash
+composer require amir-anisheh/gregorian-jalali:^1.0
+```
+
+---
+
+### 2. Install directly from GitHub 
+
+If you haven’t published the package on Packagist yet, you can require it directly from GitHub:
+
+1. Add the repository to your Laravel project’s `composer.json`:
 
 ```json
 {
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/AmirAnisheh/gregorian-jalali.git"
-        }
-    ],
-    "require": {
-        "amir-anisheh/gregorian-jalali": "dev-main"
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/AmirAnisheh/gregorian-jalali.git"
     }
+  ],
+  "require": {
+    "amir-anisheh/gregorian-jalali": "dev-main"
+  }
 }
-````
+```
 
-Then run:
+2. Run Composer update:
 
 ```bash
 composer update
 ```
 
 ---
+
+### 3. Autoload
+
+Composer will automatically autoload the package.
+Use it in your Laravel project:
+
+```php
+use AmirAnisheh\GregorianJalali\JalaliConverter;
+
+$jalali = JalaliConverter::toJalali(2025, 9, 6);
+$gregorian = JalaliConverter::toGregorian(1404, 6, 15);
+```
+
+```
+
+---
+
+This way, your README clearly explains:
+
+1. **Install via Packagist** (recommended, stable version).  
+2. **Install via GitHub** (before Packagist, dev-main).  
+3. **Usage example**.
+
+---
+
+
 
 ## Usage
 
