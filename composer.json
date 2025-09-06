@@ -1,5 +1,5 @@
 {
-  "name": "amiranishe/gregorian-jalali",
+  "name": "amir-anisheh/gregorian-jalali",
   "description": "A pure PHP Gregorian to Jalali converter for Laravel",
   "type": "library",
   "license": "MIT",
