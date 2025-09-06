@@ -1,6 +1,6 @@
 {
     "name": "amir-anisheh/scrapeflow",
-    "description": "A chainable, SOAP-like HTML parser for Laravel using pure PHP.",
+    "description": "A chainable, SOAP-like HTML parser for Laravel using pure PHP",
     "type": "library",
     "license": "MIT",
     "version": "1.2",
