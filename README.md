@@ -74,18 +74,8 @@ $jalali = JalaliConverter::toJalali(2025, 9, 6);
 $gregorian = JalaliConverter::toGregorian(1404, 6, 15);
 ```
 
-```
 
 ---
-
-This way, your README clearly explains:
-
-1. **Install via Packagist** (recommended, stable version).  
-2. **Install via GitHub** (before Packagist, dev-main).  
-3. **Usage example**.
-
----
-
 
 
 ## Usage
