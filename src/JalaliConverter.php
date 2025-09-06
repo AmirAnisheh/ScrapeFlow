@@ -1,61 +1,142 @@
 <?php
 
-namespace AmirAnisheh\GregorianJalali;
 
-class JalaliConverter
+namespace AmirAnisheh\ScrapeFlow;
+
+class HtmlParser
 {
-    // Convert Gregorian date to Jalali
-    public static function toJalali($gy, $gm, $gd)
+    protected \DOMDocument $dom;
+    protected \DOMXPath $xpath;
+    protected array $currentNodes = [];
+    protected ?string $html = null;
+
+    public function __construct()
     {
-        $g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
-        if($gy > 1600){
-            $jy = 979;
-            $gy -= 1600;
-        } else {
-            $jy = 0;
-            $gy -= 621;
-        }
-        $gy2 = ($gm > 2) ? $gy + 1 : $gy;
-        $days = 365*$gy + intval(($gy2+3)/4) - intval(($gy2+99)/100) + intval(($gy2+399)/400) - 80 + $gd + $g_d_m[$gm-1];
-        $jy += 33*intval($days/12053); 
-        $days %= 12053;
-        $jy += 4*intval($days/1461);
-        $days %= 1461;
-        if($days > 365){
-            $jy += intval(($days-1)/365);
-            $days = ($days-1)%365;
-        }
-        $jm = ($days < 186) ? 1 + intval($days/31) : 7 + intval(($days-186)/30);
-        $jd = 1 + (($days < 186) ? ($days % 31) : (($days-186) % 30));
-        return sprintf("%04d/%02d/%02d", $jy, $jm, $jd);
+        $this->dom = new \DOMDocument();
     }
 
-    // Convert Jalali date to Gregorian
-    public static function toGregorian($jy, $jm, $jd)
+    /**
+     * Load HTML from a URL
+     */
+    public function url(string $url): self
     {
-        $jy += 1595;
-        $days = -355668 + (365*$jy) + intval($jy/33)*8 + intval((($jy%33)+3)/4) + $jd;
-        $days += ($jm < 7) ? ($jm-1)*31 : (($jm-7)*30 + 186);
-        $gy = 400*intval($days/146097);
-        $days %= 146097;
-        if($days > 36524){
-            $gy += 100*intval(--$days/36524);
-            $days %= 36524;
-            if($days >= 365) $days++;
+        $this->html = @file_get_contents($url);
+        return $this->loadHtml($this->html);
+    }
+
+    /**
+     * Load HTML from a string
+     */
+    public function loadHtml(string $html): self
+    {
+        $this->html = $html;
+        @$this->dom->loadHTML($html);
+        $this->xpath = new \DOMXPath($this->dom);
+        $this->currentNodes = [$this->dom]; // start with full document
+        return $this;
+    }
+
+    /**
+     * Select nodes by tag name
+     */
+    public function getByTag(string $tag): self
+    {
+        $nodes = [];
+        foreach ($this->currentNodes as $parent) {
+            $list = $parent->getElementsByTagName($tag);
+            foreach ($list as $node) {
+                $nodes[] = $node;
+            }
         }
-        $gy += 4*intval($days/1461);
-        $days %= 1461;
-        if($days > 365){
-            $gy += intval(($days-1)/365);
-            $days = ($days-1)%365;
+        $this->currentNodes = $nodes;
+        return $this;
+    }
+
+    /**
+     * Select nodes by class name
+     */
+    public function getByClass(string $class): self
+    {
+        $nodes = [];
+        foreach ($this->currentNodes as $parent) {
+            $list = $this->xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]", $parent);
+            foreach ($list as $node) {
+                $nodes[] = $node;
+            }
         }
-        $gd = $days + 1;
-        $leap = (($gy%4==0 && $gy%100!=0) || ($gy%400==0)) ? 1 : 0;
-        $months = [0,31,($leap?29:28),31,30,31,30,31,31,30,31,30,31];
-        for($gm=1;$gm<=12;$gm++){
-            if($gd <= $months[$gm]) break;
-            $gd -= $months[$gm];
+        $this->currentNodes = $nodes;
+        return $this;
+    }
+
+    /**
+     * Select node by id
+     */
+    public function getById(string $id): self
+    {
+        $nodes = [];
+        foreach ($this->currentNodes as $parent) {
+            $list = $this->xpath->query(".//*[@id='$id']", $parent);
+            foreach ($list as $node) {
+                $nodes[] = $node;
+            }
         }
-        return sprintf("%04d-%02d-%02d", $gy, $gm, $gd);
+        $this->currentNodes = $nodes;
+        return $this;
+    }
+
+    /**
+     * Select nodes by attribute
+     */
+    public function getByAttribute(string $attr, string $value): self
+    {
+        $nodes = [];
+        foreach ($this->currentNodes as $parent) {
+            $list = $this->xpath->query(".//*[@$attr='$value']", $parent);
+            foreach ($list as $node) {
+                $nodes[] = $node;
+            }
+        }
+        $this->currentNodes = $nodes;
+        return $this;
+    }
+
+    /**
+     * Get text content of first node
+     */
+    public function text(): ?string
+    {
+        return isset($this->currentNodes[0]) ? $this->currentNodes[0]->textContent : null;
+    }
+
+    /**
+     * Get array of text contents
+     */
+    public function texts(): array
+    {
+        $result = [];
+        foreach ($this->currentNodes as $node) {
+            $result[] = $node->textContent;
+        }
+        return $result;
+    }
+
+    /**
+     * Get HTML of first node
+     */
+    public function html(): ?string
+    {
+        return isset($this->currentNodes[0]) ? $this->dom->saveHTML($this->currentNodes[0]) : null;
+    }
+
+    /**
+     * Get HTML array of all nodes
+     */
+    public function allHtml(): array
+    {
+        $result = [];
+        foreach ($this->currentNodes as $node) {
+            $result[] = $this->dom->saveHTML($node);
+        }
+        return $result;
     }
 }

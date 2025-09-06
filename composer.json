@@ -1,12 +1,33 @@
 {
-  "name": "amir-anisheh/gregorian-jalali",
-  "description": "A pure PHP Gregorian to Jalali converter for Laravel",
-  "type": "library",
-  "license": "MIT",
-  "autoload": {
-    "psr-4": {
-      "AmirAnisheh\\GregorianJalali\\": "src/"
-    }
-  },
-  "require": {}
+    "name": "amir-anisheh/scrapeflow",
+    "description": "A chainable, SOAP-like HTML parser for Laravel using pure PHP.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Amir Mohamad Anisheh",
+            "email": "amirtaja@yahoo.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "AmirAnisheh\\ScrapeFlow\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AmirAnisheh\\ScrapeFlow\\ScrapeFlowServiceProvider"
+            ],
+            "aliases": {
+                "ScrapeFlow": "AmirAnisheh\\ScrapeFlow\\Facades\\ScrapeFlow"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
